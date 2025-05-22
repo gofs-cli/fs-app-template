@@ -30,18 +30,21 @@ jobs:
     name: Checkout
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        name: Checkout project
-      - uses: actions/setup-go@v5
-        name: Install Golang
+      - name: Checkout project
+        uses: actions/checkout@v4
+      - name: Install Golang
+        uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
-      - run: make templ
-        name: Install Templ
-      - run: templ generate
-        name: Generate templ files
-      - uses: actions/upload-artifact@v4
-        name: Upload artifact
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - name: Install Node.js dependencies
+        run: npm install
+      - name: Run build script
+        run: ./scripts/build.sh
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           include-hidden-files: true
           name: checkout-${{ github.run_id }}

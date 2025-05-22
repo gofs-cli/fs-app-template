@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "tailwind": "npx @tailwindcss/cli -i ./internal/ui/styles.css -o ./internal/server/assets/css/styles.css",
+    "build": "npx bun build ./internal/ui/app.ts --format=esm --outfile=./internal/server/assets/js/app.js --minify"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.7",
+    "bun": "^1.2.14",
+    "tailwindcss": "^4.1.7"
+  },
+  "dependencies": {
+    "htmx.org": "^1.9.12"
+  }
+}
