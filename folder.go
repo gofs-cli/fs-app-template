@@ -1,19 +1,8 @@
 package folder
 
-import (
-	"embed"
-	"runtime/debug"
-)
+import "embed"
 
 //go:embed all:*
 var Folder embed.FS
 
-var ModuleName string
-
-func init() {
-	bi, ok := debug.ReadBuildInfo()
-	if !ok {
-		panic("could not read build info in azure template")
-	}
-	ModuleName = bi.Main.Path
-}
+var ModuleName = "github.com/gofs-cli/azure-app-template"
