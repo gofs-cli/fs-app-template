@@ -3,7 +3,7 @@ package toast
 const toastContainerID = "toast-container"
 
 templ Container() {
-	<div id={ toastContainerID }></div>
+	<div id={ toastContainerID } class="toast toast-top toast-center"></div>
 }
 
 templ toast() {
@@ -14,7 +14,7 @@ templ toast() {
 					close() { $el.remove();}
 			}"
 			x-init="timeoutId = setTimeout(() => { close() }, 5000);"
-			@click="clearTimeout(timeoutId); $el.remove();"
+			@click="clearTimeout(timeoutId); close();"
 		>
 			{ children... }
 		</div>
@@ -23,32 +23,32 @@ templ toast() {
 
 templ success(msg string) {
 	@toast() {
-		<div>
-			<p>{ msg }</p>
+		<div class="alert alert-success">
+			<span>{ msg }</span>
 		</div>
 	}
 }
 
 templ info(msg string) {
 	@toast() {
-		<div>
-			<p>{ msg }</p>
+		<div class="alert alert-info">
+			<span>{ msg }</span>
 		</div>
 	}
 }
 
 templ warning(msg string) {
 	@toast() {
-		<div>
-			<p>{ msg }</p>
+		<div class="alert alert-warning">
+			<span>{ msg }</span>
 		</div>
 	}
 }
 
 templ err(msg string) {
 	@toast() {
-		<div>
-			<p>{ msg }</p>
+		<div class="alert alert-error">
+			<span>{ msg }</span>
 		</div>
 	}
 }

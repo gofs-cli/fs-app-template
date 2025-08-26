@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gofs-cli/azure-app-template/internal/config"
-	"github.com/gofs-cli/azure-app-template/internal/db"
+	"github.com/gofs-cli/fs-app-template/internal/config"
+	"github.com/gofs-cli/fs-app-template/internal/db"
 )
 
 type Server struct {

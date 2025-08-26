@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"slices"
 
-	"github.com/gofs-cli/azure-app-template/internal/auth"
+	"github.com/gofs-cli/fs-app-template/internal/auth"
 
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"

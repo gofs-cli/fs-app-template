@@ -4,13 +4,14 @@
     "build": "npx bun build ./internal/ui/app.ts --format=esm --outfile=./internal/server/assets/js/app.js --minify"
   },
   "devDependencies": {
-    "@tailwindcss/cli": "^4.1.7",
+    "@tailwindcss/cli": "^4.1.12",
     "@types/alpinejs": "^3.13.11",
-    "bun": "^1.2.14",
-    "tailwindcss": "^4.1.7"
+    "bun": "^1.2.21",
+    "daisyui": "^5.0.51",
+    "tailwindcss": "^4.1.12"
   },
   "dependencies": {
     "alpinejs": "^3.14.9",
-    "htmx.org": "^1.9.12"
+    "htmx.org": "^2.0.6"
   }
 }

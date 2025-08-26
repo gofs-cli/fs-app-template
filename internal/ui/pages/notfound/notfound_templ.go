@@ -8,7 +8,7 @@ package notfound
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/gofs-cli/azure-app-template/internal/ui/components/modal"
+import "github.com/gofs-cli/fs-app-template/internal/ui/components/modal"
 
 func classLayout() templ.CSSClass {
 	templ_7745c5c3_CSSBuilder := templruntime.GetBuilder()

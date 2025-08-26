@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gofs-cli/azure-app-template/internal/config"
+	"github.com/gofs-cli/fs-app-template/internal/config"
 )
 
 type contextKey string

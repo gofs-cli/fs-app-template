@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gofs-cli/azure-app-template/internal/db/migrations"
+	"github.com/gofs-cli/fs-app-template/internal/db/migrations"
 )
 
 type DB struct {

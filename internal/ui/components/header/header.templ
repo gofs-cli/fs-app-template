@@ -1,17 +1,24 @@
 package header
 
-css classHeader() {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
 templ Header() {
-	<header hx-boost="true" class={ classHeader() }>
-		<h1><a href="/">Header</a></h1>
-		<nav>
-			<a href="/page1">Page 1</a>
-			<a href="/page2">Page 2</a>
-		</nav>
-	</header>
+	<div class="navbar bg-base-100 shadow-sm" hx-boost="true">
+		<div class="flex-1">
+			<a class="btn btn-ghost text-xl">App name</a>
+		</div>
+		@themeController()
+		<div class="flex-none">
+			<ul class="menu menu-horizontal px-1">
+				<li><a>Link</a></li>
+				<li>
+					<details>
+						<summary>Dropdown</summary>
+						<ul class="bg-base-100 rounded-t-none p-2">
+							<li><a>Link 1</a></li>
+							<li><a>Link 2</a></li>
+						</ul>
+					</details>
+				</li>
+			</ul>
+		</div>
+	</div>
 }

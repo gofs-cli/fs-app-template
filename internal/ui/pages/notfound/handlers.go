@@ -5,8 +5,8 @@ import (
 
 	"github.com/a-h/templ"
 
-	"github.com/gofs-cli/azure-app-template/internal/ui"
-	"github.com/gofs-cli/azure-app-template/internal/ui/components/header"
+	"github.com/gofs-cli/fs-app-template/internal/ui"
+	"github.com/gofs-cli/fs-app-template/internal/ui/components/header"
 )
 
 func Index() http.Handler {

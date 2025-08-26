@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gofs-cli/azure-app-template/internal/config"
-	"github.com/gofs-cli/azure-app-template/internal/server"
+	"github.com/gofs-cli/fs-app-template/internal/config"
+	"github.com/gofs-cli/fs-app-template/internal/server"
 )
 
 func main() {
