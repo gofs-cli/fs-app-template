@@ -1,0 +1,29 @@
+{
+    "name": "FS App",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    // Features to add to the dev container. More info: https://containers.dev/features.
+    // "features": {},
+    "customizations": {
+        "vscode": {
+            "settings": {},
+            "extensions": [
+                "esbenp.prettier-vscode",
+                "a-h.templ",
+                "golang.go"
+            ]
+        }
+    },
+    "forwardPorts": [
+        8080
+    ],
+    "portsAttributes": {
+        "8080": {
+            "label": "Server",
+            "onAutoForward": "notify"
+        }
+    },
+    "postCreateCommand": "npm install"
+}
