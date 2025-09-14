@@ -1,11 +1,14 @@
 {
     "name": "FS App",
-    "build": {
-        "dockerfile": "Dockerfile",
-        "context": ".."
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+        "ghcr.io/devcontainers/features/go:1": {
+            "version": "1.25.1"
+        },
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "lts"
+        }
     },
-    // Features to add to the dev container. More info: https://containers.dev/features.
-    // "features": {},
     "customizations": {
         "vscode": {
             "settings": {},
@@ -25,5 +28,9 @@
             "onAutoForward": "notify"
         }
     },
-    "postCreateCommand": "npm install"
+    "postCreateCommand": {
+        "npm install": "npm install",
+        "go install templ": "go install github.com/a-h/templ/cmd/templ@latest",
+        "go install gopls": "go install golang.org/x/tools/gopls@latest"
+    }
 }
