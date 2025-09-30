@@ -1,8 +1,11 @@
 package server
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
 
+	"github.com/gofs-cli/fs-app-template/internal/repository"
 	"github.com/gofs-cli/fs-app-template/internal/server/assets"
 	"github.com/gofs-cli/fs-app-template/internal/server/handlers"
 	"github.com/gofs-cli/fs-app-template/internal/ui/pages/home"
@@ -22,5 +25,30 @@ func (s *Server) Routes() {
 
 	s.r.Handle("/", s.routeMiddlewares(routesMux))
 
+	s.r.Handle("GET /users", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		users, err := s.repo.GetUsers(r.Context())
+		if err != nil {
+			http.Error(w, "failed to get users", http.StatusInternalServerError)
+			return
+		}
+		err = json.NewEncoder(w).Encode(users)
+		if err != nil {
+			http.Error(w, "failed to encode users", http.StatusInternalServerError)
+			return
+		}
+	}))
+
+	s.r.Handle("GET /insertusers", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var user repository.InsertUserParams
+		user.Email = "test@example.com"
+		user.Name = "Test User"
+		if err := s.repo.InsertUser(r.Context(), user); err != nil {
+			log.Println("server: error inserting user:", err)
+			http.Error(w, "failed to insert user", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	// ensure the server uses the updated handler with all routes and middleware
 	s.srv.Handler = s.r
 }

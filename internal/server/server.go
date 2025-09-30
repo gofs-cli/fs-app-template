@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,14 +10,19 @@ import (
 
 	"github.com/gofs-cli/fs-app-template/internal/config"
 	"github.com/gofs-cli/fs-app-template/internal/db"
+	"github.com/gofs-cli/fs-app-template/internal/repository"
 )
 
 type Server struct {
-	r       *http.ServeMux
-	srv     http.Server
-	conf    config.Config
-	db      db.DB
-	closeFn []func(context.Context) error
+	conf config.Config
+	r    *http.ServeMux
+	srv  http.Server
+	// repo is an sqlc generated repository for executing queries
+	repo *repository.Queries
+	// conn is a handle to the database connection used for the repository
+	//
+	// The handle is part of the server to allow closing the connection on shutdown
+	conn *sql.DB
 }
 
 func New(conf config.Config) (*Server, error) {
@@ -30,27 +36,18 @@ func New(conf config.Config) (*Server, error) {
 		Handler:      s.r,
 	}
 	var err error
-	s.db, err = s.initDb()
+	s.conn, err = db.New()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("db: opening connection: %w", err)
 	}
-	err = db.MigrateTables(s.db)
+	s.repo = repository.New(s.conn)
+
+	err = db.MigrateTables(s.conn)
 	if err != nil {
 		return nil, fmt.Errorf("db: migrating tables: %w", err)
 	}
-	s.closeFn = append(s.closeFn, s.db.Close)
 
 	return s, nil
-}
-
-func (s *Server) initDb() (db.DB, error) {
-	switch {
-	case s.conf.Env.Local() && s.conf.DSN != "":
-		return db.LocalPG(s.conf.DSN)
-	default:
-		log.Println("server: no database connection")
-		return db.DB{}, nil
-	}
 }
 
 func (s *Server) ListenAndServe() error {
@@ -65,11 +62,21 @@ func (s *Server) ListenAndServe() error {
 }
 
 func (s *Server) Shutdown(ctx context.Context) error {
-	defer s.srv.Shutdown(ctx)
-	for _, fn := range s.closeFn {
-		if err := fn(ctx); err != nil {
-			log.Println("server: error closing resources:", err)
+	var err error
+
+	// Shutdown the HTTP server gracefully
+	if shutdownErr := s.srv.Shutdown(ctx); shutdownErr != nil {
+		err = fmt.Errorf("server shutdown: %w", shutdownErr)
+	}
+
+	// Close database connection
+	if closeErr := s.conn.Close(); closeErr != nil {
+		if err != nil {
+			err = fmt.Errorf("%w; db close: %v", err, closeErr)
+		} else {
+			err = fmt.Errorf("db close: %w", closeErr)
 		}
 	}
-	return nil
+
+	return err
 }

@@ -6,6 +6,7 @@ set -o pipefail
 set -x
 
 go tool templ generate
+go tool sqlc generate
 npm run build
 npm run tailwind
 go build -o ./tmp/main cmd/server/main.go
