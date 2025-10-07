@@ -12,6 +12,7 @@ import (
 
 func (s *Server) assetsMiddlewares(h http.Handler) http.Handler {
 	middlewares := []func(http.Handler) http.Handler{
+		middleware.Logger,
 		cors.Handler(cors.Options{
 			AllowedOrigins:   s.conf.AllowedOrigins,
 			AllowedMethods:   []string{http.MethodGet, http.MethodOptions},
@@ -19,7 +20,6 @@ func (s *Server) assetsMiddlewares(h http.Handler) http.Handler {
 			AllowCredentials: true,
 			MaxAge:           300,
 		}),
-		middleware.Logger,
 		middleware.Compress(5),
 		middleware.SetHeader("Cache-Control", "max-age=604800, stale-while-revalidate=86400"),
 	}
@@ -32,6 +32,7 @@ func (s *Server) assetsMiddlewares(h http.Handler) http.Handler {
 
 func (s *Server) routeMiddlewares(h http.Handler) http.Handler {
 	middlewares := []func(http.Handler) http.Handler{
+		middleware.Logger,
 		cors.Handler(cors.Options{
 			AllowedOrigins:   s.conf.AllowedOrigins,
 			AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions},
@@ -39,7 +40,6 @@ func (s *Server) routeMiddlewares(h http.Handler) http.Handler {
 			AllowCredentials: true,
 			MaxAge:           300,
 		}),
-		middleware.Logger,
 		middleware.NoCache,
 		middleware.StripSlashes,
 		middleware.Recoverer,
