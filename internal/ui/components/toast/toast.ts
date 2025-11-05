@@ -142,6 +142,16 @@ class Toast extends HTMLElement {
 
   triggerClose = (velocity: number) => {
     if(!this.#progressAnimation) return;
+
+    // we dont want to close the toast if there is text selected
+    const sel = window.getSelection();
+    if(sel && sel.rangeCount > 0 && sel.type === "Range"){
+      if(this.contains(sel?.focusNode)) return;
+      for(let i = 0; i < sel.rangeCount; i++){
+        if(this.contains(sel.getRangeAt(i).startContainer)) return;
+      }
+    }
+
     this.#progressAnimation = undefined;
 
     const left = this.#parseLeft();
