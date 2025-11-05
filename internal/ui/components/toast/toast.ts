@@ -8,6 +8,7 @@ const ALERT_TYPE_CLASSES: Record<string, string> = {
 }
 
 const DEFAULT_TOAST_DURATION = 5000;
+const TOAST_SWIPE_VELOCITY_THRESHOLD = window.screen.availWidth / 2; // px / s
 
 // recreating:
 //   x-data="{
@@ -17,8 +18,7 @@ const DEFAULT_TOAST_DURATION = 5000;
 //   x-init="timeoutId = setTimeout(() => { close() }, 5000);"
 //   @click="clearTimeout(timeoutId); close();"
 //
-// additional features: progress bar, pause on hover
-// TODO: mobile swiping
+// additional features: progress bar, pause on hover, swiping away on mobile
 
 class Toast extends HTMLElement {
   constructor() {
@@ -28,6 +28,9 @@ class Toast extends HTMLElement {
   }
 
   #progressAnimation: Animation | undefined;
+  #lastTouchEvent: TouchEvent | undefined;
+  // [px, timestamp]
+  #lastTouchChanges: number[][] = [];
 
   connectedCallback() {
     this.render();
@@ -50,17 +53,31 @@ class Toast extends HTMLElement {
       fill: "forwards"
     });
 
-    this.#progressAnimation?.addEventListener("finish", this.triggerClose);
+    this.#progressAnimation?.addEventListener("finish", ()=>this.triggerClose(0));
 
     this.addEventListener("mouseenter", this.onMouseEnter);
     this.addEventListener("mouseleave", this.onMouseLeave);
-    this.addEventListener("click", this.triggerClose);
+    this.addEventListener("click", ()=>this.triggerClose(0));
+    this.addEventListener("touchstart", this.onTouchStart);
+    this.addEventListener("touchmove", this.onTouchMove);
+    this.addEventListener("touchend", this.onTouchEnd);
   }
 
   disconnectedCallback(){
     this.removeEventListener("mouseenter", this.onMouseEnter);
     this.removeEventListener("mouseleave", this.onMouseLeave);
-    this.removeEventListener("click", this.triggerClose);
+    this.removeEventListener("click", ()=>this.triggerClose(0));
+    this.removeEventListener("touchstart", this.onTouchStart);
+    this.removeEventListener("touchmove", this.onTouchMove);
+    this.removeEventListener("touchend", this.onTouchEnd);
+  }
+
+  #parseLeft = (): number => {
+    const currentLeft = this.shadowRoot!.children[0]!.style.left;
+    if(currentLeft !== ""){
+      return parseInt(currentLeft.slice(0, -2))
+    }
+    return 0;
   }
 
   onMouseEnter = () =>  {
@@ -71,9 +88,66 @@ class Toast extends HTMLElement {
     this.#progressAnimation?.play();
   }
 
-  triggerClose = () => {
+  onTouchStart = (e: TouchEvent) => {
+    this.#lastTouchEvent = e;
+    this.#lastTouchChanges = [];
+    this.#progressAnimation?.pause();
+  }
+
+  onTouchMove = (e: TouchEvent) => {
+    let diffX = e.changedTouches[0].clientX - this.#lastTouchEvent!.changedTouches[0].clientX;
+    // saving x traveled and current timestamp for velocity calculations
+    this.#lastTouchChanges.push([diffX, performance.now()]);
+
+    this.#lastTouchEvent = e;
+    this.#lastTouchChanges.slice(-5);
+    this.shadowRoot!.children[0]!.style.left = `${diffX + this.#parseLeft()}px`;
+  }
+
+  onTouchEnd = () => {
+    const left = this.#parseLeft();
+    if(this.#lastTouchChanges.length > 2){
+      // calculate total x movement
+      const x = this.#lastTouchChanges.reduce((cur, prev) => cur + prev[0], 0);
+      // calculate timespan
+      const t = performance.now() - this.#lastTouchChanges[0][1];
+      // calculate velocity
+      const v = x / t;
+
+      if(Math.abs(v * 1000) >= TOAST_SWIPE_VELOCITY_THRESHOLD) return this.triggerClose(v);
+    }
+
+    this.#progressAnimation?.play();
+    this.shadowRoot!.children[0]!.style.left = "";
+    this.shadowRoot!.children[0]!.animate([
+      {
+        left: `${left}px`
+      },
+      {
+        left: `0px`
+      }
+    ], 250);
+  }
+
+  triggerClose = (velocity: number) => {
     if(!this.#progressAnimation) return;
     this.#progressAnimation = undefined;
+
+    const left = this.#parseLeft();
+    const animationDuration = 250;
+    
+    this.shadowRoot!.children[0]!.animate([
+      {
+        left: `${left}px`
+      },
+      {
+        // velocity is in px per ms
+        left: `${left + (velocity * animationDuration)}px`
+      }
+    ], {
+      duration: animationDuration,
+      fill: "forwards"
+    });
     this.animate([
       {
         scale: 1,
@@ -84,7 +158,7 @@ class Toast extends HTMLElement {
         opacity: 0
       }
     ], {
-      duration: 250,
+      duration: animationDuration,
       easing: "ease-out",
       fill: "forwards"
     }).addEventListener("finish", () => {
