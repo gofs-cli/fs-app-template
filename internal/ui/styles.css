@@ -3,6 +3,33 @@
   themes: light --default, dark --prefersdark;
 }
 
+/*alert-[status] isn't found in source very easily, so best to force add to css*/
+/*reference: https://tailwindcss.com/docs/detecting-classes-in-source-files#safelisting-specific-utilities*/
+@source inline("alert-success");
+@source inline("alert-warning");
+@source inline("alert-error");
+@source inline("alert-info");
+
 [x-cloak] {
   display: none !important;
+}
+
+@layer components{
+  .toast-alert{
+    @apply alert alert-vertical sm:alert-horizontal relative overflow-hidden;
+  }
+
+  .toast-alert-progress{
+    @apply h-1 absolute;
+
+
+    bottom: calc(0% - var(--border));
+    left: calc(0% - var(--border));
+    z-index: 10;
+    background: currentColor;
+  }
+
+  #toast-container{
+    @apply toast sm:toast-top flex-col-reverse sm:flex-col toast-center z-50;
+  }
 }

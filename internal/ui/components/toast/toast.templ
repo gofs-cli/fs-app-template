@@ -3,52 +3,37 @@ package toast
 const toastContainerID = "toast-container"
 
 templ Container() {
-	<div id={ toastContainerID } class="toast toast-top toast-center"></div>
+	<div id={ toastContainerID }></div>
 }
 
-templ toast() {
-	<div id={ toastContainerID } hx-swap-oob="afterbegin">
-		<div
-			x-data="{
-					timeoutId: 0,
-					close() { $el.remove();}
-			}"
-			x-init="timeoutId = setTimeout(() => { close() }, 5000);"
-			@click="clearTimeout(timeoutId); close();"
-		>
+templ toast(toastType string) {
+	<div id={ toastContainerID } class="toast-container" hx-swap-oob="afterbegin">
+		<toast-element type={toastType}>
 			{ children... }
-		</div>
+		</toast-element>
 	</div>
 }
 
 templ success(msg string) {
-	@toast() {
-		<div class="alert alert-success">
-			<span>{ msg }</span>
-		</div>
+	@toast("success") {
+        <span>{ msg }</span>
 	}
 }
 
 templ info(msg string) {
-	@toast() {
-		<div class="alert alert-info">
-			<span>{ msg }</span>
-		</div>
+	@toast("info") {
+        <span>{ msg }</span>
 	}
 }
 
 templ warning(msg string) {
-	@toast() {
-		<div class="alert alert-warning">
-			<span>{ msg }</span>
-		</div>
+	@toast("warning") {
+        <span>{ msg }</span>
 	}
 }
 
 templ err(msg string) {
-	@toast() {
-		<div class="alert alert-error">
-			<span>{ msg }</span>
-		</div>
+	@toast("error") {
+        <span>{ msg }</span>
 	}
 }
