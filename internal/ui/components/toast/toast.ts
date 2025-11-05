@@ -117,7 +117,7 @@ class Toast extends HTMLElement {
 
   onTouchEnd = () => {
     const left = this.#parseLeft();
-    if(this.#lastTouchChanges.length > 2){
+    if(this.#lastTouchChanges.length > 0){
       // calculate total x movement
       const x = this.#lastTouchChanges.reduce((cur, prev) => cur + prev[0], 0);
       // calculate timespan
