@@ -1,5 +1,3 @@
-import {getGlobalStyleSheets} from "../../util/global-styles";
-
 const ALERT_TYPE_CLASSES: Record<string, string> = {
   "success": "alert-success",
   "info": "alert-info",
@@ -23,17 +21,17 @@ const TOAST_SWIPE_VELOCITY_THRESHOLD = window.screen.availWidth / 2; // px / s
 class Toast extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({mode: "open"});
-    this.shadowRoot!.adoptedStyleSheets.push(...getGlobalStyleSheets());
+    this.#children = Array.from(this.children).map(el=>el.cloneNode(true));
   }
 
   #progressAnimation: Animation | undefined;
   #lastTouchEvent: TouchEvent | undefined;
   // [px, timestamp]
   #lastTouchChanges: number[][] = [];
+  #children: Node[];
 
   #getAlertElement = (): HTMLElement => {
-    return <HTMLElement>this.shadowRoot!.children[0];
+    return <HTMLElement>this.children[0];
   }
 
   #parseLeft = (): number => {
@@ -53,7 +51,7 @@ class Toast extends HTMLElement {
       toastDuration = DEFAULT_TOAST_DURATION;
     }
 
-    this.#progressAnimation = this.shadowRoot!.querySelector(".toast-alert-progress")!.animate([
+    this.#progressAnimation = this.querySelector(".toast-alert-progress")!.animate([
       {
         width: "0%"
       },
@@ -189,12 +187,12 @@ class Toast extends HTMLElement {
 
   render() {
     const alertType = this.getAttribute('type') || "";
-    this.shadowRoot!.innerHTML = `
+    this.innerHTML = `
       <div class="toast-alert ${!!ALERT_TYPE_CLASSES[alertType] ? ALERT_TYPE_CLASSES[alertType] : ''}">
-        <slot></slot>
         <div class="toast-alert-progress"></div>
       </div>
     `;
+    this.#getAlertElement().prepend(...this.#children);
   }
 }
 
