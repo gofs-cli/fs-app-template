@@ -97,6 +97,11 @@ class Toast extends HTMLElement {
   onTouchMove = (e: TouchEvent) => {
     let diffX = e.changedTouches[0].clientX - this.#lastTouchEvent!.changedTouches[0].clientX;
     // saving x traveled and current timestamp for velocity calculations
+
+    if(this.#lastTouchChanges.length > 0 && this.#lastTouchChanges[this.#lastTouchChanges.length - 1][0] * diffX < 0){
+      this.#lastTouchChanges = [];
+    }
+
     this.#lastTouchChanges.push([diffX, performance.now()]);
 
     this.#lastTouchEvent = e;
