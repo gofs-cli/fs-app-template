@@ -111,7 +111,7 @@ class Toast extends HTMLElement {
     this.#lastTouchChanges.push([diffX, performance.now()]);
 
     this.#lastTouchEvent = e;
-    this.#lastTouchChanges.slice(-5);
+    this.#lastTouchChanges = this.#lastTouchChanges.slice(-5);
     this.#getAlertElement().style.left = `${diffX + this.#parseLeft()}px`;
   }
 
