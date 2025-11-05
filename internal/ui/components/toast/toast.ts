@@ -32,6 +32,18 @@ class Toast extends HTMLElement {
   // [px, timestamp]
   #lastTouchChanges: number[][] = [];
 
+  #getAlertElement = (): HTMLElement => {
+    return <HTMLElement>this.shadowRoot!.children[0];
+  }
+
+  #parseLeft = (): number => {
+    const currentLeft = this.#getAlertElement().style.left;
+    if(currentLeft !== ""){
+      return parseInt(currentLeft.slice(0, -2))
+    }
+    return 0;
+  }
+
   connectedCallback() {
     this.render();
 
@@ -72,14 +84,6 @@ class Toast extends HTMLElement {
     this.removeEventListener("touchend", this.onTouchEnd);
   }
 
-  #parseLeft = (): number => {
-    const currentLeft = this.shadowRoot!.children[0]!.style.left;
-    if(currentLeft !== ""){
-      return parseInt(currentLeft.slice(0, -2))
-    }
-    return 0;
-  }
-
   onMouseEnter = () =>  {
     this.#progressAnimation?.pause();
   }
@@ -106,7 +110,7 @@ class Toast extends HTMLElement {
 
     this.#lastTouchEvent = e;
     this.#lastTouchChanges.slice(-5);
-    this.shadowRoot!.children[0]!.style.left = `${diffX + this.#parseLeft()}px`;
+    this.#getAlertElement().style.left = `${diffX + this.#parseLeft()}px`;
   }
 
   onTouchEnd = () => {
@@ -123,8 +127,8 @@ class Toast extends HTMLElement {
     }
 
     this.#progressAnimation?.play();
-    this.shadowRoot!.children[0]!.style.left = "";
-    this.shadowRoot!.children[0]!.animate([
+    this.#getAlertElement().style.left = "";
+    this.#getAlertElement().animate([
       {
         left: `${left}px`
       },
@@ -140,8 +144,8 @@ class Toast extends HTMLElement {
 
     const left = this.#parseLeft();
     const animationDuration = 250;
-    
-    this.shadowRoot!.children[0]!.animate([
+
+    this.#getAlertElement().animate([
       {
         left: `${left}px`
       },
