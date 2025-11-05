@@ -7,7 +7,7 @@
     "@tailwindcss/cli": "^4.1.12",
     "@types/alpinejs": "^3.13.11",
     "bun": "^1.2.21",
-    "daisyui": "^5.0.51",
+    "daisyui": "^5.4.4",
     "tailwindcss": "^4.1.12"
   },
   "dependencies": {
