@@ -8,20 +8,10 @@ const ALERT_TYPE_CLASSES: Record<string, string> = {
 const DEFAULT_TOAST_DURATION = 5000;
 const TOAST_SWIPE_VELOCITY_THRESHOLD = window.screen.availWidth / 2; // px / s
 
-// recreating:
-//   x-data="{
-//   timeoutId: 0,
-//     close() { $el.remove();}
-//   }"
-//   x-init="timeoutId = setTimeout(() => { close() }, 5000);"
-//   @click="clearTimeout(timeoutId); close();"
-//
-// additional features: progress bar, pause on hover, swiping away on mobile
-
 class Toast extends HTMLElement {
   constructor() {
     super();
-    this.#children = Array.from(this.children).map(el=>el.cloneNode(true));
+    this.#children = Array.from(this.children).map(el => el.cloneNode(true));
   }
 
   #progressAnimation: Animation | undefined;
@@ -36,7 +26,7 @@ class Toast extends HTMLElement {
 
   #parseLeft = (): number => {
     const currentLeft = this.#getAlertElement().style.left;
-    if(currentLeft !== ""){
+    if (currentLeft !== "") {
       return parseInt(currentLeft.slice(0, -2))
     }
     return 0;
@@ -63,26 +53,26 @@ class Toast extends HTMLElement {
       fill: "forwards"
     });
 
-    this.#progressAnimation?.addEventListener("finish", ()=>this.triggerClose(0));
+    this.#progressAnimation?.addEventListener("finish", () => this.triggerClose(0));
 
     this.addEventListener("mouseenter", this.onMouseEnter);
     this.addEventListener("mouseleave", this.onMouseLeave);
-    this.addEventListener("click", ()=>this.triggerClose(0));
+    this.addEventListener("click", () => this.triggerClose(0));
     this.addEventListener("touchstart", this.onTouchStart);
     this.addEventListener("touchmove", this.onTouchMove);
     this.addEventListener("touchend", this.onTouchEnd);
   }
 
-  disconnectedCallback(){
+  disconnectedCallback() {
     this.removeEventListener("mouseenter", this.onMouseEnter);
     this.removeEventListener("mouseleave", this.onMouseLeave);
-    this.removeEventListener("click", ()=>this.triggerClose(0));
+    this.removeEventListener("click", () => this.triggerClose(0));
     this.removeEventListener("touchstart", this.onTouchStart);
     this.removeEventListener("touchmove", this.onTouchMove);
     this.removeEventListener("touchend", this.onTouchEnd);
   }
 
-  onMouseEnter = () =>  {
+  onMouseEnter = () => {
     this.#progressAnimation?.pause();
   }
 
@@ -101,7 +91,7 @@ class Toast extends HTMLElement {
 
     // reset lastTouchChanges when the direction changes so that swiping in one direction and then another still closes
     // the toast
-    if(this.#lastTouchChanges.length > 0 && this.#lastTouchChanges[this.#lastTouchChanges.length - 1][0] * diffX < 0){
+    if (this.#lastTouchChanges.length > 0 && this.#lastTouchChanges[this.#lastTouchChanges.length - 1][0] * diffX < 0) {
       this.#lastTouchChanges = [];
     }
 
@@ -115,7 +105,7 @@ class Toast extends HTMLElement {
 
   onTouchEnd = () => {
     const left = this.#parseLeft();
-    if(this.#lastTouchChanges.length > 0){
+    if (this.#lastTouchChanges.length > 0) {
       // calculate total x movement
       const x = this.#lastTouchChanges.reduce((cur, prev) => cur + prev[0], 0);
       // calculate timespan
@@ -123,7 +113,7 @@ class Toast extends HTMLElement {
       // calculate velocity
       const v = x / t;
 
-      if(Math.abs(v * 1000) >= TOAST_SWIPE_VELOCITY_THRESHOLD) return this.triggerClose(v);
+      if (Math.abs(v * 1000) >= TOAST_SWIPE_VELOCITY_THRESHOLD) return this.triggerClose(v);
     }
 
     this.#progressAnimation?.play();
@@ -139,14 +129,14 @@ class Toast extends HTMLElement {
   }
 
   triggerClose = (velocity: number) => {
-    if(!this.#progressAnimation) return;
+    if (!this.#progressAnimation) return;
 
     // we dont want to close the toast if there is text selected
     const sel = window.getSelection();
-    if(sel && sel.rangeCount > 0 && sel.type === "Range"){
-      if(this.contains(sel?.focusNode)) return;
-      for(let i = 0; i < sel.rangeCount; i++){
-        if(this.contains(sel.getRangeAt(i).startContainer)) return;
+    if (sel && sel.rangeCount > 0 && sel.type === "Range") {
+      if (this.contains(sel?.focusNode)) return;
+      for (let i = 0; i < sel.rangeCount; i++) {
+        if (this.contains(sel.getRangeAt(i).startContainer)) return;
       }
     }
 
