@@ -6,6 +6,10 @@ run: dbup
 	@go tool air
 .PHONY: run
 
+build:
+	@go build -o bin/app ./cmd/server/main.go
+.PHONY: build
+
 lint:
 	@golangci-lint run
 .PHONY: lint
