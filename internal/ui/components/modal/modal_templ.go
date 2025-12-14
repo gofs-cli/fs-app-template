@@ -8,7 +8,7 @@ package modal
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-/* Modal component meant ot be used by the servcer returning a templ component with
+/* Modal component meant to be used by the server returning a templ component with
 @modal.Modal() {
 	<div>
 		<h2>Demo Modal</h2>

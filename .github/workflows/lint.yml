@@ -15,7 +15,7 @@ jobs:
         name: Install Golang
         with:
           go-version-file: "go.mod"
-      - uses: golangci/golangci-lint-action@v6
+      - uses: golangci/golangci-lint-action@v9
         name: Run golangci-lint
         with:
           args: --config=.golangci.yml

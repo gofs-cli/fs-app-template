@@ -1,14 +1,15 @@
 # Golang full stack app
 
+Requires Go 1.21+ and Bun
+
 ## What does this app include out of the box?
 
 - templ setup with a simple page with a few example components
 - auto build from air
-- alpinejs setup
 - go server setup
-- docker setup
-- postgres setup with local and GCP connectors
 
 ## Before you start development
 
-- Decide how you want to use databases and eitehr remove the postgres setup or the GCP setup and roll your own or remove gorm if using direct connections
+1. Install Go 1.21+ from https://go.dev/dl/
+2. Install Bun from https://bun.sh/
+3. Run `bun install` to install the bun dependencies
